@@ -877,5 +877,5 @@ syn.queue_on_teleport([[
     repeat wait(3) until game.Loaded 
     wait(3)
 
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BunnySalf/My-Hero-Mania-1-/main/xdd"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BunnySalf/mheehub/main/adasdasd"))()
 ]])

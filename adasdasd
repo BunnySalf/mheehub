@@ -1,0 +1,881 @@
+repeat wait() until  game:IsLoaded() 
+
+local VirtualUser = game:service'VirtualUser'
+    game:service'Players'.LocalPlayer.Idled:connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+
+local plr = game:GetService("Players").LocalPlayer
+local mon 
+local quest
+local reward 
+local dialogue
+local dialogue2 
+local levelcheck = game:GetService("Players").LocalPlayer.PlayerStats.Level.Value
+local liststand = {}
+local standnow = game:GetService("Players").LocalPlayer.PlayerStats.Stand
+local listitemsa= {}
+
+
+
+local Default = {
+    farm = false ;
+    mode = "Next to" ;
+    distants = 3 ; 
+    Qs= false ; 
+    e = false ; 
+    r = false ; 
+    t = false ; 
+    z = false ;
+    y = false ; 
+    h = false ; 
+    x = false ; 
+    j = false ;
+    u = false ; 
+    g = false ; 
+    rebirth = false ; 
+    Typefarm = nil ; 
+    urlhook = nil ; 
+    noti = false ; 
+    itess = false ; 
+    Spin = false ; 
+    use = false ;
+    sell = false ; 
+    useRo = false ; 
+    UseAr = false ; 
+    selectstands = nil ;
+    selectar = nil ;
+    selectitems = nil ; 
+    selall = false ; 
+    Save = false ; 
+    itemfarm = false ; 
+    itemhop = false ; 
+    itemesp = false ; 
+
+}
+
+-- setting.distants = 3 
+-- setting.typefarm = "Normal"
+-- setting.mode = "Next to"
+-- function zone 
+
+local HttpService = game:GetService("HttpService")
+local SaveFileName = "MheeHub"..tostring(game.PlaceId) ..".json" -- name
+ 
+if not isfolder('MheeHub') then
+    makefolder('MheeHub')
+end
+if not pcall(function() readfile("MheeHub/" .. SaveFileName) end) then
+    writefile("MheeHub/" .. SaveFileName, HttpService:JSONEncode(Default))
+end
+
+local   set = HttpService:JSONDecode(readfile("MheeHub/" .. SaveFileName))
+
+local function SaveSettings()
+    writefile("MheeHub/" .. SaveFileName, HttpService:JSONEncode(set))
+end
+
+
+-- Server Hop 
+
+local PlaceID = game.PlaceId
+local AllIDs = {}
+local foundAnything = ""
+local actualHour = os.date("!*t").hour
+local Deleted = false
+local File = pcall(function()
+    AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+end)
+if not File then
+    table.insert(AllIDs, actualHour)
+    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+end
+
+
+function TPReturner()
+    local Site;
+    if foundAnything == "" then
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+    else
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+    end
+    local ID = ""
+    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+        foundAnything = Site.nextPageCursor
+    end
+    local num = 0;
+    for i,v in pairs(Site.data) do
+        local Possible = true
+        ID = tostring(v.id)
+        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+            for _,Existing in pairs(AllIDs) do
+                if num ~= 0 then
+                    if ID == tostring(Existing) then
+                        Possible = false
+                    end
+                else
+                    if tonumber(actualHour) ~= tonumber(Existing) then
+                        local delFile = pcall(function()
+                            delfile("NotSameServers.json")
+                            AllIDs = {}
+                            table.insert(AllIDs, actualHour)
+                        end)
+                    end
+                end
+                num = num + 1
+            end
+            if Possible == true then
+                table.insert(AllIDs, ID)
+                wait()
+                pcall(function()
+                    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                    wait()
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                end)
+                wait(4)
+            end
+        end
+    end
+end
+
+local function Teleport()
+    while wait() do
+        pcall(function()
+            TPReturner()
+            if foundAnything ~= "" then
+                TPReturner()
+            end
+        end)
+    end
+end
+
+
+
+
+--insert 
+for i , v in pairs(game:GetService("ReplicatedStorage").Stands:GetChildren()) do
+    table.insert(liststand , v.Name)
+end
+for i , v in pairs(plr.Backpack:GetChildren()) do
+   if v:IsA("Tool") then
+    table.insert(listitemsa , v.Name)
+   end
+end
+
+
+
+local m = getrawmetatable(game);
+local old = m.__namecall
+setreadonly(m,false)
+m.__namecall = newcclosure(function(self,...)
+    local arg = {...}
+    if self.Name == "Returner" and arg[1]  == "idklolbrah2de"  then
+              return "  ___XP DE KEY" -- ควยยย
+    end
+      return old(self,...)
+end)
+
+local function Click()
+game:GetService("Players").LocalPlayer.Character.RemoteEvent:FireServer("Attack","m1")
+
+end
+
+
+local function Tp(pos)
+    plr.Character.HumanoidRootPart.CFrame = pos 
+    return pos 
+end
+
+local function check()
+    for i , v in pairs(plr.PlayerStats:GetChildren()) do
+        if string.match(v.Name , "Level") then
+            local le = v.Value 
+        if plr.PlayerStats.Prestige.Value <= 2 then
+            if le >= 1 and le < 10 then 
+                dialogue = {["Option"] = "Option1",["Dialogue"] = "Dialogue5",["NPC"] = "Officer Sam"}
+                dialogue2 = {["Option"] = "Option1",["Dialogue"] = "Dialogue5",["NPC"] = "Officer Sam"}
+                reward = "Take down 5 thugs"
+                mon = "Thug"
+            elseif le >= 10 and le < 15 then
+                dialogue ={["Option"] = "Option1",["Dialogue"] = "Dialogue2",["NPC"] = "Deputy Bertrude"}
+                dialogue2 ={["Option"] = "Option1",["Dialogue"] = "Dialogue5",["NPC"] = "Deputy Bertrude"}
+                reward = "Take down 5 corrupt police"
+                mon =  "Corrupt Police"
+            elseif le >= 15 and le < 20 then
+                dialogue = {["Dialogue"] = 'Dialogue6',["NPC"] = "Lion Abbacho's Partner",["Option"] = 'Option1'}
+                dialogue2 = {["Dialogue"] = 'Dialogue7',["NPC"] = "Lion Abbacho's Partner",["Option"] = 'Option1'}
+                reward =  "Take down 5 alpha thugs"
+                mon =  "Alpha Thug"
+            elseif le >= 20 and le < 30 then
+                dialogue = {["Dialogue"] = 'Dialogue4',["NPC"] = 'Dracula',["Option"] = 'Option1'}
+                dialogue2 = {["Dialogue"] = 'Dialogue4',["NPC"] = 'Dracula',["Option"] = 'Option1'}
+                reward = "Take down 3 zombie henchmans"
+                mon =  "Zombie Henchman"
+            elseif le >= 30 and le < 35 then
+                dialogue =  {["Dialogue"] = 'Dialogue3',["NPC"] = 'Dopey',["Option"] = 'Option1'}
+                dialogue2 =  {["Dialogue"] = 'Dialogue5',["NPC"] = 'Dopey',["Option"] = 'Option1'}
+                reward = "Kill Deo"
+                mon =   "Deo" 
+            elseif le >= 35 and le < math.huge then
+                dialogue =  {["Dialogue"] = 'Dialogue4',["NPC"] = 'Deo',["Option"] = 'Option1'}
+                reward = "Defeat Joe"
+                mon =   "Joe" 
+--[[
+                elseif le >= 40 and le < math.huge then
+                dialogue = {["Dialogue"] = 'Dialogue2',["NPC"] = 'Storyline #1',["Option"] = 'Option1'}
+                reward = "Kill Deo"
+                mon =   "Deo"
+    
+]]
+                end 
+            elseif plr.PlayerStats.Prestige.Value >= 3 then
+                if le >= 1 and le < 10 then 
+                    dialogue = {["Option"] = "Option1",["Dialogue"] = "Dialogue5",["NPC"] = "Officer Sam"}
+                    dialogue2 = {["Option"] = "Option1",["Dialogue"] = "Dialogue5",["NPC"] = "Officer Sam"}
+                    reward = "Take down 5 thugs"
+                    mon = "Thug"
+                elseif le >= 10 and le < 15 then
+                    dialogue ={["Option"] = "Option1",["Dialogue"] = "Dialogue2",["NPC"] = "Deputy Bertrude"}
+                    dialogue2 ={["Option"] = "Option1",["Dialogue"] = "Dialogue5",["NPC"] = "Deputy Bertrude"}
+                    reward = "Take down 5 corrupt police"
+                    mon =  "Corrupt Police"
+                elseif le >= 15 and le < 20 then
+                    dialogue = {["Dialogue"] = 'Dialogue6',["NPC"] = "Lion Abbacho's Partner",["Option"] = 'Option1'}
+                    dialogue2 = {["Dialogue"] = 'Dialogue7',["NPC"] = "Lion Abbacho's Partner",["Option"] = 'Option1'}
+                    reward =  "Take down 5 alpha thugs"
+                    mon =  "Alpha Thug"
+                elseif le >= 20 and le < 30 then
+                    dialogue = {["Dialogue"] = 'Dialogue4',["NPC"] = 'Dracula',["Option"] = 'Option1'}
+                    dialogue2 = {["Dialogue"] = 'Dialogue4',["NPC"] = 'Dracula',["Option"] = 'Option1'}
+                    reward = "Take down 3 zombie henchmans"
+                    mon =  "Zombie Henchman"
+                elseif le >= 30 and le < 35 then
+                    dialogue =  {["Dialogue"] = 'Dialogue3',["NPC"] = 'Dopey',["Option"] = 'Option1'}
+                    dialogue2 =  {["Dialogue"] = 'Dialogue5',["NPC"] = 'Dopey',["Option"] = 'Option1'}
+                    reward = "Kill Deo"
+                    mon =   "Deo" 
+                elseif le >= 35 and le < math.huge then
+                    dialogue =  {["Dialogue"] = 'Dialogue4',["NPC"] = 'Deo',["Option"] = 'Option1'}
+                    reward = "Defeat Joe"
+                    mon =   "Joe" 
+                    
+                end
+            end
+            return le 
+        end
+    end
+end
+
+spawn(function ()
+    while wait() do
+        if set.farm then
+            pcall(function ()
+                check()
+            end)
+           --[[
+                if setting.typefarm == "Normal" then
+                check()
+            end
+            if setting.typefarm == "Storyline" then
+                check2()
+            end 
+           ]]
+        end
+    end
+end)
+
+--[[
+    
+function tpquest()
+    for i , v in pairs(game:GetService("Workspace").Dialogues:GetChildren()) do
+        if v.Name == quest then
+            if v:FindFirstChild("HumanoidRootPart") then
+                Tp(v.HumanoidRootPart.CFrame * CFrame.new(0,0.7,-5))
+                plr.Character.HumanoidRootPart.CFrame = CFrame.new(plr.Character.HumanoidRootPart.Position, v.HumanoidRootPart.Position)
+            end
+        end
+    end
+end
+]]
+
+--[[
+    function getquest()
+    local virtualUser = game:GetService('VirtualUser')
+
+    virtualUser:SetKeyDown('0x65')
+    virtualUser:SetKeyUp('0x65')
+   -- bypass()
+end
+
+]]
+
+
+local function autofarm()
+    if not plr.PlayerGui.HUD.Main.Frames.Quest.Quests:FindFirstChild(reward) then
+         game.Players.LocalPlayer.Character.RemoteEvent:FireServer("EndDialogue",dialogue)      
+         game.Players.LocalPlayer.Character.RemoteEvent:FireServer("EndDialogue",dialogue2)                  
+     elseif plr.PlayerGui.HUD.Main.Frames.Quest.Quests:FindFirstChild(reward)  then
+        for i , v in pairs(game:GetService("Workspace").Living:GetChildren()) do 
+             if v.Name == mon then
+                    if  tonumber(v.Health.Value) > 0 or v.Humanoid.Health > 1  then
+                         repeat  wait()
+                                if set.mode == "Next to" then
+                                    Tp(v.HumanoidRootPart.CFrame * CFrame.new(0,1,-set.distants))
+                        
+                                end
+                                if set.mode == "Behind" then
+                                    Tp(v.HumanoidRootPart.CFrame * CFrame.new(0,1,set.distants))
+                                end
+                                plr.Character.HumanoidRootPart.CFrame = CFrame.new(plr.Character.HumanoidRootPart.Position, v.HumanoidRootPart.Position)
+                             if (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude < 30 then
+                                 Click()
+                                 if set.e then
+                                     plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.E})
+                                 end
+                                 if set.r then
+                                     plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.R})
+                                 end
+                                 if set.t then
+                                     plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.T})
+                                 end
+                                 if set.z then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.Z})
+                                end
+                                if set.y then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.Y})
+                                end
+                                if set.h then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.H})
+                                end
+                                if set.x then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.X})
+                                end
+                                if set.u then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.U})
+                                end
+                                if set.j then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.J})
+                                end
+                                if set.g then
+                                    plr.Character.RemoteEvent:FireServer("InputBegan",{["Input"] = Enum.KeyCode.G})
+                                end
+                             end   
+                          --   if (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude < 30 then
+                                for i2 , v2 in pairs(game:GetService("Workspace")["Mob_Spawns"]:GetChildren()) do
+                                    if v2.Name == mon then
+                                        if v2:IsA("Part") then
+                                            Tp(v.CFrame * CFrame.new(0,1,-set.distants))
+                                        end
+                                    end
+                                end
+                         --   end
+
+                         until tonumber(v.Health.Value) == 0 or v.Humanoid.Health == 0  or  not set.farm or  not plr.PlayerGui.HUD.Main.Frames.Quest.Quests:FindFirstChild(reward)             
+                        end
+                    end
+                end
+            end
+   if plr.PlayerStats.Prestige.Value <= 3 then
+      if  set.rebirth then 
+        for i = 0 , 5 , 1 do wait()
+            if i == 5 then
+                return 0
+            end
+            plr.Character.RemoteEvent:FireServer("EndDialogue",{["Dialogue"] = 'Dialogue'..tostring(i) ,["NPC"] = 'Prestige',["Option"] = 'Option1'})
+            end
+        end
+    end
+end
+
+
+local tpitemss = function ()
+    if not game:GetService("Workspace")["Item_Spawns"].Items:FindFirstChild("Model")  then
+        -- ex mata 
+                setreadonly(Vector3, false)
+                local vt3 = Vector3.new()
+                local mt = getrawmetatable(vt3)
+                setreadonly(mt, false)
+                local old4 = mt.__index
+                mt.__index = newcclosure(function(a,b,c)
+                local method = getcallingscript()
+                if not checkcaller() 
+                        and method == game.ReplicatedFirst.ItemSpawn
+                        and tostring(b) == "magnitude" then
+                            return 0
+                        end
+                        return old4(a, b, c)
+                end) 
+        --end mata 
+            elseif   game:GetService("Workspace")["Item_Spawns"].Items.Model:FindFirstChild("MeshPart") then
+                for i , v in pairs(game:GetService("Workspace")["Item_Spawns"].Items:GetChildren()) do 
+                    if v:IsA("Model") then
+                        if v:FindFirstChild("MeshPart") and v:FindFirstChild("ClickDetector") or v:IsA("Part") then
+                            repeat wait()
+                               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.MeshPart.CFrame * CFrame.new(0,3,0)
+                          
+                               if (v.MeshPart.Position -  game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude < 5 then
+                                wait(2)
+                                fireclickdetector(v.ClickDetector)
+                            end
+--[[
+                                if (v.Part.Position -  game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude < 5 then
+                                wait(1)
+                                fireclickdetector(v.ClickDetector)
+                            end
+]]
+                            -- if game:GetService("Workspace")["Item_Spawns"].Items.Model:FindFirstChild("Part") or not  game:GetService("Workspace")["Item_Spawns"].Items.Model:FindFirstChild("MeshPart") then 
+                            --     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Part.CFrame* CFrame.new(0,3,0)
+                            --     if (v.Part.Position -  game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude < 5 then
+                            --         wait(2)
+                            --         fireclickdetector(v.ClickDetector)
+                            --     end
+                            -- end
+                            until  not    game:GetService("Workspace")["Item_Spawns"].Items.Model:FindFirstChild("MeshPart") or not set.itemfarm
+                        end
+                    end
+                end
+            end
+end
+
+
+local itemsserv = function ()
+    if not   game:GetService("Workspace")["Item_Spawns"].Items.Model:FindFirstChild("MeshPart") then
+        Teleport()
+    end
+end
+
+
+local VLib = loadstring(game:HttpGet"https://raw.githubusercontent.com/BunnySalf/Pls-Don-t-Crack-me-Pls/main/Polar.Don't.Crack.Me")()
+local W = VLib:AddWindow("YBA")
+local m1 = W:AddTab("Auto Farm", "http://www.roblox.com/asset/?id=6031265968")
+--local m2 = W:AddTab("Items","http://www.roblox.com/asset/?id=6031079152")
+local m2 = W:AddTab("Extra","http://www.roblox.com/asset/?id=6031079152")
+
+local b = m1:AddSection("Auto Farm")
+
+--local b3 = m2:AddSection("Auto Spin")
+
+local Tragetnon = b:AddLabel("Traget : ")
+local countmon = b:AddLabel(" QuestProgress ")
+
+
+spawn(function ()
+    while wait() do
+       pcall(function ( ... )
+        Tragetnon:Re("Traget : "..tostring(mon))
+        countmon:Re("Progress : " ..plr.PlayerStats.QuestProgress.Value .."/"  ..plr.PlayerStats.QuestMaxProgress.Value)
+       end)
+    end
+end)
+
+
+--[[
+    b:AddDropdown("Select TypeFrame",{"Normal","Storyline"},function (v)
+    setting.typefarm = v 
+end)
+]]
+
+b:AddSwitch("Auto Farm",set.farm,function(v)
+    set.farm = v 
+    spawn(function ()
+        while wait() do
+            if set.farm then
+                pcall(function ()
+                    autofarm()
+                end)
+            end
+        end
+    end)
+    spawn(function()
+        while wait() do
+            if set.farm then
+                if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity_") then      
+                    local bv = Instance.new("BodyVelocity")
+                    bv.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+                    bv.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+                    bv.Velocity = Vector3.new(0,0,0)
+                    bv.Name = "BodyVelocity_"
+                end
+            elseif set.farm == false then
+                for i , v in pairs(game.Players.LocalPlayer.Character.HumanoidRootPart:GetChildren()) do
+                    if v.Name == "BodyVelocity_" then
+                    v:Destroy()  
+                    end
+                end
+            end
+        end
+    end
+    )
+
+end)
+
+b:AddSwitch("Auto Rebirth",set.rebirth,function (v)
+    set.rebirth = v 
+end)
+
+
+b:AddSwitch("Auto Stand",set.Qs,function (v)
+    set.Qs = v 
+    spawn(function ()
+        while wait() do
+            if set.Qs then
+                pcall(function ()
+                    if not plr.Character:FindFirstChild("StandMorph") then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "Q", false, game)
+                         game:GetService("VirtualInputManager"):SendKeyEvent(false, "Q", false, game)
+                    end
+                end)
+            end
+        end
+    end)
+end)
+
+
+    
+b:AddDropdown("Select Mode",{"Next to","Behind"},function (v)
+    set.mode = v 
+end)
+
+b:AddSlider("Distants",0,20,tonumber(set.distants),function (v)
+    set.distants = v 
+end)
+
+
+local s = m1:AddSection("Auto Skills")
+
+s:AddSwitch("Skill Z", set.z,function (v)
+    set.z  = v 
+end)
+
+s:AddSwitch("Skill E", set.e,function (v)
+    set.e  = v 
+end)
+
+s:AddSwitch("Skill R", set.r,function (v)
+    set.r  = v 
+end)
+
+s:AddSwitch("Skill T", set.t,function (v)
+    set.t  = v 
+end)
+
+s:AddSwitch("Skill Y", set.y,function (v)
+    set.y  = v 
+end)
+
+s:AddSwitch("Skill H", set.h,function (v)
+    set.h  = v 
+end)
+
+s:AddSwitch("Skill X", set.x,function (v)
+    set.x  = v 
+end)
+
+s:AddSwitch("Skill J", set.j,function (v)
+    set.j  = v 
+end)
+
+s:AddSwitch("Skill U", set.u,function (v)
+    set.u  = v 
+end)
+
+s:AddSwitch("Skill G", set.g,function (v)
+    set.g  = v 
+end)
+
+
+local it = m1:AddSection("Items Farm")
+
+it:AddSwitch("Items Farm", set.itemfarm,function (v)
+    set.itemfarm = v 
+    spawn(function ()
+        while true do
+            if set.itemfarm then
+                pcall(function ()
+                    tpitemss()
+                end)
+            end
+            wait()
+        end
+    end)
+    spawn(function()
+        while wait() do
+            if set.itemfarm then
+                if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity_") then      
+                    local bv = Instance.new("BodyVelocity")
+                    bv.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+                    bv.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+                    bv.Velocity = Vector3.new(0,0,0)
+                    bv.Name = "BodyVelocity__"
+                end
+            elseif set.itemfarm == false then
+                for i , v in pairs(game.Players.LocalPlayer.Character.HumanoidRootPart:GetChildren()) do
+                    if v.Name == "BodyVelocity__" then
+                    v:Destroy()  
+                    end
+                end
+            end
+        end
+    end
+    )
+
+end)
+
+it:AddSwitch("Auto SeverHop", set.itemhop,function (v)
+    set.itemhop = v 
+    spawn(function ()
+        while true do
+            if set.itemhop then
+                itemsserv()
+            end
+            wait()
+        end
+    end)
+end)
+
+it:AddSwitch("Items ESP", set.itemesp,function (v)
+    set.itemesp = v 
+end)
+
+
+
+local bs = m1:AddSection("Setting ")
+
+bs:AddSwitch("Auto Save",set.Save,function (v)
+    set.Save = v 
+    spawn(function ()
+        while true do
+            SaveSettings()
+            wait()
+        end
+    end)
+end)
+
+
+    --[[
+setting.mode = "Under"
+f:AddDropdown("Select Mode",{"Under","Over","Behind"},function (v)
+    setting.mode = v 
+    if setting.mode == "Behind" then
+        setting.distants = 3 
+    end
+    if setting.mode == "Under" then
+        setting.distants = 5
+    end
+    if setting.mode == "Over" then
+        setting.distants = 5 
+    end
+end)
+
+]]
+
+
+--[[
+    b2:AddTextBox("Url Webhook",function (v)
+    setting.urlhook = v 
+end)
+
+b2:AddButton("Test Webhook",function (v)
+  
+end)
+
+b2:AddSwitch("Items Farm",false,function (v)
+    setting.itess = v 
+    spawn(function ()
+        while wait() do 
+            if setting.itess then
+                for i , v in pairs(game:GetService("Workspace")["Item_Spawns"].Items:GetChildren()) do 
+                    if v:IsA("Model") then
+                        if v:FindFirstChild("ClickDetector") then
+                            print(v.Name)
+                          --  if (v.Position - plr.Character.HumanoidRootPart.Position).magnitude < 5 then
+                            --    print("Have")
+                             --   fireclickdetector(v.ClickDetector)
+                             --   wait(5)
+                          --  end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+b2:AddSwitch("Notify Items",false,function (v)
+    setting.noti = v 
+    if setting.noti then
+        game.Players.LocalPlayer.Backpack.ChildAdded:connect(function(a)
+            if a:IsA("Tool") then
+                local url =  setting.urlhook
+                local data = {
+                ["content"] = "@everyone",
+                ["embeds"] = {
+                    {
+                        ["title"] = "**Notify**",
+                        ["description"] = "Items  : " .."**".. a.Name.."**",
+                        ["type"] = "rich",
+                        ["color"] = tonumber(0x7269da),
+                         
+                                ["image"] = {
+                            ["url"] = "https://cdn.discordapp.com/attachments/688002903675371592/850358891878678528/GomuGomunoMi.png"
+                        }
+                         
+                    
+                    }
+                }
+                }
+                local newdata = game:GetService("HttpService"):JSONEncode(data)
+    
+                local headers = {
+                ["content-type"] = "application/json"
+                }
+                request = http_request or request or HttpPost or syn.request
+                local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
+                request(abcdef)
+            end
+        end)
+    end
+end)
+
+]]
+
+--[[
+    local Stats = b3:AddLabel("Status : ")
+
+b3:AddSwitch("Auto Spin",false,function (v)
+    setting.Spin = v 
+    spawn(function ()
+        while wait() do
+            if setting.Spin then
+                game.Players.LocalPlayer.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Item Machine" , ["Option"] = "Option1", ["Dialogue"] = "Dialogue1" })     
+            end
+        end
+    end)
+end)
+
+
+]]
+
+--[[
+    -- Script generated by SimpleSpy - credits to exx#9394
+
+local args = {
+    [1] = "EndDialogue",
+    [2] = {
+        ["NPC"] = "Mysterious Arrow",
+        ["Option"] = "Option1",
+        ["Dialogue"] = "Dialogue2"
+    }
+}
+
+game:GetService("Players").LocalPlayer.Character.RemoteEvent:FireServer(unpack(args))
+
+-- ]]
+-- local b2 = m2:AddSection("Extra")
+
+-- b2:AddLabel("_______Auto Spin_______")
+
+
+-- b2:AddDropdown2("Select Stands",liststand,function (v)
+--     setting.selectstands = v 
+-- end)
+
+-- b2:AddDropdown("Select Arrow",{"Stand Arrow","Mysterious Arrow"},function (v)
+--     setting.selectar = v 
+-- end)
+
+-- b2:AddSwitch("Auto Spin",false,function (v)
+--     setting.Spin = v 
+--     spawn(function ()
+--         while wait() do
+--             if setting.Spin then
+--                 if standnow.Value ~= setting.selectstands then
+--                     plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Rokakaka" , ["Option"] = "Option1", ["Dialogue"] = "Dialogue2" })  
+--                     wait(2)
+--                     plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = setting.selectar  , ["Option"] = "Option1", ["Dialogue"] = "Dialogue2" })  
+--                 elseif  standnow.Value == setting.selectstands then
+--                     setting.Spin = false 
+--                     break
+--                 end
+--             end
+--         end
+--     end)
+-- end)
+
+-- b2:AddDropdown2("Select Items ",listitemsa,function (v)
+--     setting.selectitems = v 
+-- end)
+
+-- b2:AddSwitch("Auto Sell",false,function(v)
+--     setting.sell = v 
+--     spawn(function()
+--         while wait() do
+--             if setting.sell then
+--                 pcall(function ()
+--                     for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
+--                         if tool:IsA("Tool") and tool.Name == setting.selectitems  then
+--                              tool.Parent = game:GetService("Players").LocalPlayer.Character 
+--                                 plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Merchant",["Option"] = "Option1",["Dialogue"] = "Dialogue5"})
+--                         end
+--                     end
+--                 end)
+--             end
+--         end
+--     end)
+-- end) -- selall
+
+-- b2:AddSwitch("Auto Sell [All]",false,function(v)
+--     setting.selall = v 
+--     spawn(function()
+--         while wait() do
+--             if setting.selall then
+--                 pcall(function ()
+--                     for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
+--                         if tool:IsA("Tool")   then
+--                              tool.Parent = game:GetService("Players").LocalPlayer.Character 
+--                                 plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Merchant",["Option"] = "Option1",["Dialogue"] = "Dialogue5"})
+--                         end
+--                     end
+--                 end)
+--             end
+--         end
+--     end)
+-- end) -- selall
+
+
+-- b2:AddButton("User Arrow",function ()
+--     plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Mysterious Arrow"  , ["Option"] = "Option1", ["Dialogue"] = "Dialogue2" })  
+--     plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Stand Arrow"  , ["Option"] = "Option1", ["Dialogue"] = "Dialogue2" })  
+-- end)
+
+-- b2:AddButton("User Rokaka",function (v)
+--     plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Rokakaka" , ["Option"] = "Option1", ["Dialogue"] = "Dialogue2" })  
+-- end)
+
+-- --[[
+--     b2:AddSwitch("Auto Use Rokaka",false,function (v)
+--     setting.UseAr = v 
+--     spawn(function ()
+--         while wait() do
+--             if setting.UseAr then
+--                 pcall(function ()
+--                    plr.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Rokakaka" , ["Option"] = "Option1", ["Dialogue"] = "Dialogue2" })  
+--                 end)
+--             end
+--         end
+--     end)
+-- end)
+-- ]]
+
+-- b2:AddButton("Spin Items",function (v)
+--     game.Players.LocalPlayer.Character.RemoteEvent:FireServer("EndDialogue",{["NPC"] = "Item Machine" , ["Option"] = "Option1", ["Dialogue"] = "Dialogue1" })     
+-- end)
+
+syn.queue_on_teleport([[
+    repeat wait(3) until game.Loaded 
+    wait(3)
+
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BunnySalf/My-Hero-Mania-1-/main/xdd"))()
+]])
